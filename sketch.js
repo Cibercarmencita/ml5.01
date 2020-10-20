@@ -8,7 +8,7 @@ let img,img01;
 
 
 function setup() {
-  createCanvas(640, 480);
+  createCanvas (displayWidth-50, displayHeight-25); // createCanvas(640, 480);
   video = createCapture(VIDEO);
   video.hide();
   poseNet = ml5.poseNet(video, modelLoaded);
