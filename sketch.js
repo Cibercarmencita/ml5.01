@@ -10,10 +10,11 @@ let img,img01;
 function setup() {
   createCanvas (displayWidth-50, displayHeight-25); // createCanvas(640, 480);
   video = createCapture(VIDEO);
-  video.hide();
+  video.size(width, heigth);//video.hide();
   poseNet = ml5.poseNet(video, modelLoaded);
   poseNet.on('pose', damePoses);
-  img = createImage(640,480);
+  video.hide(); // esto antes no estaba
+  img = createImage(width, height); //(640,480);
   img01 = loadImage('01.png');
   }
 
@@ -29,9 +30,40 @@ function modelLoaded() {
 }
 
 function draw() {
-  image(video, 0, 0);
+  image(video, 0, 0,width, height);
+  dibujapuntosclaves();
+  dibujaSkeleton();
+}
+ 
+function dibujapuntosclaves() {
+ for (let i = 0; i < poses.length;i++){
+ let pose = poses[i].pose;
+   for (let j = 0; j < poses.keypoints.length; j++){
+   let keypoint = pose.keypoints[j];
+     if (keypoint.score > 0.2) {
+        fill(255, 0, 0);
+       noStroke();
+       ellipse(keypoint.position.x, keypoint.position.y, 10, 10);
+       }
+     }
+   }
+}
 
-  if (pose) {
+function dibujaSkeleton() {
+ for (let i = 0; i < poses.length; i++){
+  let skeleton = poses[i].skeleton;
+   for (let j = 0; j < skeleton.length;j++){
+    let partA = skeleton [j][0];
+    let partB = skeleton[j][1];
+     stroke (random(0,255), 0, random(0,255));
+     line(partA.position.x, partA.position.y, partB.position.x, partB.position.y);
+     let d = dist(eyeR.x, eyeR.y, eyeL.x, eyeL.y);
+     image(img01, pose.nose.x-30,pose.nose.y-10,d,d);
+   }
+ }
+}
+
+/*if (pose) {
     let eyeR = pose.rightEye;
     let eyeL = pose.leftEye;
     let d = dist(eyeR.x, eyeR.y, eyeL.x, eyeL.y);
@@ -57,7 +89,7 @@ function draw() {
       line(a.position.x, a.position.y,b.position.x,b.position.y);       }
   }
 }
-
+*/
 function mousePressed(){
   save(img, 'imagen.jpg');
 }
